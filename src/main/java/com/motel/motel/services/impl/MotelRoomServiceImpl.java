@@ -2,9 +2,11 @@ package com.motel.motel.services.impl;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
+import com.motel.motel.models.dtos.MotelDTO;
 import com.motel.motel.models.dtos.MotelRoomDTO;
 import com.motel.motel.models.entities.MotelRoomDAO;
 import com.motel.motel.models.mapper.AccountMapper;
+import com.motel.motel.models.mapper.MotelMapper;
 import com.motel.motel.models.mapper.MotelRoomMapper;
 import com.motel.motel.models.response.BaseResponse;
 import com.motel.motel.models.response.MotelRoomResponse;
@@ -26,6 +28,9 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
 
     @Autowired
     MotelRoomMapper motelRoomMapper;
+
+    @Autowired
+    MotelMapper motelMapper;
 
     @Override
     public MotelRoomResponse add(MotelRoomDTO dto) {
@@ -65,8 +70,11 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
         for(MotelRoomDTO room : roomList){
             AccountDTO owner = accountMapper.toDTO(dbContext.accountRepository.findByRoomId(room.getId()));
             UserService.RoomOwnerResponse roomOwner = new UserService.RoomOwnerResponse();
+            MotelDTO motel = motelMapper.toDTO(dbContext.motelRepository.findById(room.getMotelId()).orElseThrow());
             roomOwner.setOwner(owner);
             roomOwner.setRoom(room);
+            roomOwner.setMotel(motel);
+
             result.add(new RoomOwnerResponse(roomOwner));
         }
 

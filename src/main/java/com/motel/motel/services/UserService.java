@@ -2,6 +2,7 @@ package com.motel.motel.services;
 
 import com.motel.motel.models.dtos.AccountDTO;
 import com.motel.motel.models.dtos.MakeAppointDTO;
+import com.motel.motel.models.dtos.MotelDTO;
 import com.motel.motel.models.dtos.MotelRoomDTO;
 import com.motel.motel.models.e.RoleName;
 import com.motel.motel.models.e.RoomStatus;
@@ -98,6 +99,7 @@ public class UserService {
     public static class RoomOwnerResponse{
         private AccountDTO owner;
         private MotelRoomDTO room;
+        private MotelDTO motel;
     }
 
     public static class Response extends BaseResponse<RoomOwnerResponse>{
