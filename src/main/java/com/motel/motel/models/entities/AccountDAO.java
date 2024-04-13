@@ -21,7 +21,7 @@ public class AccountDAO extends BaseEntity{
     private String name;
     @Column(length = 200, unique = true)
     private String mail;
-    @Column(length = 11)
+    @Column(length = 11, unique = true)
     private String phone;
     @Column(length = 500)
     private String address;

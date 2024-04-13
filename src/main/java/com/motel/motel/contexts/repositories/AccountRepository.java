@@ -24,4 +24,11 @@ public interface AccountRepository extends JpaRepository<AccountDAO, Integer> {
             "inner join motelRoom on motelRoom.motelId = motel.id \n" +
             "where motelRoom.id = :roomId", nativeQuery = true)
     AccountDAO findByRoomId(@Param(value = "roomId") int roomId);
+
+    // LOGIN
+    boolean existsByPhone(String phone);
+
+    AccountDAO findByPhone(String phone);
+
+
 }

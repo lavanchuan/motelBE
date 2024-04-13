@@ -1,5 +1,7 @@
 package com.motel.motel.services;
 
+import com.motel.motel.models.dtos.AccountDTO;
+
 import java.util.List;
 
 public interface ICRUDService <DTO, ID, RESPONSE>{
@@ -8,4 +10,5 @@ public interface ICRUDService <DTO, ID, RESPONSE>{
     RESPONSE delete(ID id);
     List<DTO> findAll();
     DTO findById(ID id);
+
 }
