@@ -25,4 +25,16 @@ public class ApiController {
     public ResponseEntity<?> motelRoomFindOne(@RequestParam(name = "roomId", required = true) int roomId){
         return ResponseEntity.ok(adminService.motelRoomService.findById(roomId));
     }
+
+    // REVIEW BY ROOM ID
+    @GetMapping("/review-all-by-room")
+    public ResponseEntity<?> reviewFindAllByRoomId(@RequestParam(name = "motelRoomId") int motelRoomId){
+        return ResponseEntity.ok(adminService.reviewService.findAllByRoomId(motelRoomId));
+    }
+
+    //TODO CHECK
+    @GetMapping("/admin")
+    public ResponseEntity<?> admin(){
+        return ResponseEntity.ok(adminService.accountService.findAllAdmin());
+    }
 }

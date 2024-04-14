@@ -52,7 +52,7 @@ public class AuthenController {
         }
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> update(@RequestBody AccountDTO request){
         AccountResponse response = accountService.update(request);
 

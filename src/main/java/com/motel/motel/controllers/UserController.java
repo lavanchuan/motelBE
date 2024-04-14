@@ -1,15 +1,15 @@
 package com.motel.motel.controllers;
 
-import com.motel.motel.models.dtos.AccountDTO;
-import com.motel.motel.models.dtos.MakeAppointDTO;
-import com.motel.motel.models.response.AccountResponse;
-import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.dtos.*;
+import com.motel.motel.models.response.*;
 import com.motel.motel.services.AdminService;
 import com.motel.motel.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -52,5 +52,48 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             default: return ResponseEntity.ok(response);
         }
+    }
+
+    //TODO BookRoom
+    @PostMapping("/booking-room") // return list booking of userId
+    public ResponseEntity<?> bookingRoom(@RequestBody BookRoomDTO request){
+        BookRoomResponse response = userService.bookingRoom(request);
+
+        switch (response.getStatus()){
+            case BaseResponse.ERROR: return ResponseEntity.badRequest().build();
+            default: return ResponseEntity.ok(response);
+        }
+    }
+
+    //TODO Review
+    @PostMapping("/review-add")
+    public ResponseEntity<?> addReview(@RequestBody ReviewDTO request){
+        ReviewResponse response = userService.addReview(request);
+
+        switch (response.getStatus()){
+            case BaseResponse.ERROR: return ResponseEntity.badRequest().build();
+            default: return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/send-mess-admin")
+    public ResponseEntity<?> sendMessageAdmin(@RequestBody MessageDTO request){
+
+        return ResponseEntity.ok(userService.sendMessageAdmin(request));
+    }
+
+    @PostMapping("/send-mess-owner")
+    public ResponseEntity<?> sendMessageOwner(@RequestBody MessageDTO request){
+
+        return ResponseEntity.ok(userService.sendMessageOwner(request));
+    }
+
+
+    // MESSAGE
+    @GetMapping("/message")
+    public ResponseEntity<?> message(@RequestParam(name = "senderId") int senderId,
+                                     @RequestParam(name = "receiverId") int receiverId){
+
+        return ResponseEntity.ok(adminService.messageService.findAllBySenderReceiver(senderId, receiverId));
     }
 }

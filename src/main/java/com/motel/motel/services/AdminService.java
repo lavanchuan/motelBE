@@ -1,9 +1,7 @@
 package com.motel.motel.services;
 
-import com.motel.motel.services.impl.AccountServiceImpl;
-import com.motel.motel.services.impl.MakeAppointServiceImpl;
-import com.motel.motel.services.impl.MotelRoomServiceImpl;
-import com.motel.motel.services.impl.PasswordServiceImpl;
+import com.motel.motel.models.dtos.ReviewDTO;
+import com.motel.motel.services.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +19,12 @@ public class AdminService {
     @Autowired
     public MakeAppointServiceImpl makeAppointService;
 
+    @Autowired
+    public BookRoomServiceImpl bookRoomService;
+
+    @Autowired
+    public ReviewServiceImpl reviewService;
+
+    @Autowired
+    public MessageServiceImpl messageService;
 }

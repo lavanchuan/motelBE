@@ -76,5 +76,14 @@ public class DateTimeFormatService {
                 dateTime.getSecond() < 10 ? "0"+dateTime.getSecond() : dateTime.getSecond());
     }
 
+     public static boolean isValidStartEnd(LocalDateTime startTime, LocalDateTime endTime){
+        return startTime.isBefore(endTime);
+     }
 
+
+    public static boolean isValidStartEnd(String startTime, String endTime) {
+        if(startTime == null || startTime.isEmpty()) return false;
+        if(endTime == null || endTime.isEmpty()) return false;
+        return isValidStartEnd(toLocalDateTime(startTime), toLocalDateTime(endTime));
+    }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements ICRUDService<AccountDTO, Integer, AccountResponse> {
@@ -122,5 +123,11 @@ public class AccountServiceImpl implements ICRUDService<AccountDTO, Integer, Acc
 
     public String getPassword(String email) {
         return dbContext.passwordRepository.getPassword(email);
+    }
+
+    // LIST ADMIN
+    public List<AccountDTO> findAllAdmin(){
+        return dbContext.accountRepository.findAllByADMIN().stream().map(accountMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -23,4 +23,13 @@ public class DbContext {
 
     @Autowired
     public MakeAppointRepository makeAppointRepository;
+
+    @Autowired
+    public BookRoomRepository bookRoomRepository;
+
+    @Autowired
+    public ReviewRepository reviewRepository;
+
+    @Autowired
+    public MessageRepository messageRepository;
 }

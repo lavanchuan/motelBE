@@ -91,4 +91,8 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
     public boolean existsById(int roomId) {
         return dbContext.motelRoomRepository.existsById(roomId);
     }
+
+    public boolean isOneSelf(int userId, int motelRoomId) {
+        return dbContext.motelRoomRepository.isOneSelf(userId, motelRoomId) == 1;
+    }
 }

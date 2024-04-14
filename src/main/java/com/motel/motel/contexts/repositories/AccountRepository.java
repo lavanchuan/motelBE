@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface AccountRepository extends JpaRepository<AccountDAO, Integer> {
 
@@ -31,4 +33,15 @@ public interface AccountRepository extends JpaRepository<AccountDAO, Integer> {
     AccountDAO findByPhone(String phone);
 
 
+    @Query(value = "select account.* from account \n" +
+            "inner join bookRoom on bookRoom.userId = account.id \n" +
+            "where bookRoom.id = :bookRoomId \n" +
+            "limit 1", nativeQuery = true)
+    AccountDAO findByBookRoomId(@Param(value = "bookRoomId") int bookRoomId);
+
+    // LIST ADMIN
+    @Query(value = "select distinct account.* from account \n" +
+            "inner join role on role.id = account.roleId \n" +
+            "where role.name = 'ADMIN'", nativeQuery = true)
+    List<AccountDAO> findAllByADMIN();
 }
