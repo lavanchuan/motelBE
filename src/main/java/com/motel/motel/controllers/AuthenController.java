@@ -2,13 +2,17 @@ package com.motel.motel.controllers;
 
 import com.motel.motel.models.dtos.AccountDTO;
 import com.motel.motel.models.request.AccountRegisterRequest;
+import com.motel.motel.models.request.ChangePasswordRequest;
 import com.motel.motel.models.request.LoginRequest;
 import com.motel.motel.models.response.AccountResponse;
 import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.response.OtherResponse;
 import com.motel.motel.services.AuthenService;
 import com.motel.motel.services.MailSenderService;
+import com.motel.motel.services.UserService;
 import com.motel.motel.services.impl.AccountServiceImpl;
 import jakarta.validation.Valid;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,6 +28,9 @@ public class AuthenController {
 
     @Autowired
     AccountServiceImpl accountService;
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AccountRegisterRequest request){
@@ -63,8 +70,8 @@ public class AuthenController {
     }
 
     @PostMapping("/register-owner")
-    public ResponseEntity<?> registerOwner(@RequestParam(name = "accountId") int accountId){
-        AccountResponse response = accountService.registerOwner(accountId);
+    public ResponseEntity<?> registerOwner(@RequestBody AccountIdRequest request){
+        AccountResponse response = userService.registerOwner(request.getAccountId());
 
         switch (response.getStatus()){
             case BaseResponse.ERROR: return ResponseEntity.badRequest().build();
@@ -80,5 +87,20 @@ public class AuthenController {
             case BaseResponse.ERROR: return ResponseEntity.badRequest().build();
             default: return ResponseEntity.ok(response);
         }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request){
+        OtherResponse<String> response = authenService.changePassword(request);
+        switch (response.getStatus()){
+            case BaseResponse.ERROR: return ResponseEntity.badRequest().build();
+            default: return ResponseEntity.ok(response);
+        }
+    }
+
+    // Request module
+    @Data
+    public static class AccountIdRequest{
+        private int accountId;
     }
 }

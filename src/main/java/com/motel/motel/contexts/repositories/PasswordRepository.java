@@ -14,4 +14,9 @@ public interface PasswordRepository extends JpaRepository<PasswordDAO, Integer> 
             "where account.mail = :email \n" +
             "limit 1", nativeQuery = true)
     String getPassword(@Param(value = "email") String email);
+
+    @Query(value = "select password.* from password \n" +
+            "where password.accountId = :userId \n" +
+            "limit 1", nativeQuery = true)
+    PasswordDAO findByUserId(@Param(value = "userId") int userId);
 }

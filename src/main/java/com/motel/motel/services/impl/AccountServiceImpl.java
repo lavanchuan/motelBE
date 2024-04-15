@@ -2,7 +2,7 @@ package com.motel.motel.services.impl;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
-import com.motel.motel.models.e.RoleName;
+
 import com.motel.motel.models.entities.AccountDAO;
 import com.motel.motel.models.mapper.AccountMapper;
 import com.motel.motel.models.request.LoginRequest;
@@ -93,28 +93,6 @@ public class AccountServiceImpl implements ICRUDService<AccountDTO, Integer, Acc
     public AccountDTO findByPhone(String phone) {
         AccountDAO accountDAO = dbContext.accountRepository.findByPhone(phone);
         return accountMapper.toDTO(accountDAO);
-    }
-
-    public AccountResponse registerOwner(int accountId) {
-        if(!dbContext.accountRepository.existsById(accountId)) return new AccountResponse(BaseResponse.ERROR);
-        AccountDAO dao = dbContext.accountRepository.findById(accountId).orElseThrow();
-        if(dao.getRoleDAO().getName() != RoleName.USER) return new AccountResponse(BaseResponse.ERROR);//TODO CHECK
-        if(!isValidRequestOwnerInfo(dao)) return new AccountResponse(BaseResponse.ERROR);
-        dao.setRoleDAO(dbContext.roleRepository.findByName(RoleName.OWNER));
-        dao = dbContext.accountRepository.save(dao);
-        return new AccountResponse(accountMapper.toDTO(dao));
-    }
-
-    private boolean isValidRequestOwnerInfo(AccountDAO dao) {
-        return dao.getName() != null && !dao.getName().isEmpty() &&
-                dao.getMail() != null && !dao.getMail().isEmpty() &&
-                dao.getAddress() != null && !dao.getAddress().isEmpty() &&
-                dao.getPhone() != null && !dao.getPhone().isEmpty() &&
-                dao.getCreateAt() != null &&
-                dao.getRoleDAO() != null &&
-                dao.getSex() != null &&
-                dao.getDateOfBirth() != null;
-
     }
 
     public boolean existsByMail(String email) {

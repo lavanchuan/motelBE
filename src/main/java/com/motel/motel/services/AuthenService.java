@@ -4,10 +4,13 @@ import com.motel.motel.models.dtos.AccountDTO;
 import com.motel.motel.models.dtos.MailDTO;
 import com.motel.motel.models.dtos.PasswordDTO;
 import com.motel.motel.models.entities.AccountDAO;
+import com.motel.motel.models.entities.PasswordDAO;
 import com.motel.motel.models.request.AccountRegisterRequest;
+import com.motel.motel.models.request.ChangePasswordRequest;
 import com.motel.motel.models.request.LoginRequest;
 import com.motel.motel.models.response.AccountResponse;
 import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.response.OtherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,5 +88,19 @@ public class AuthenService {
         mailSenderService.sendMail(mailDTO);
 
         return new MailSenderService.MailSenderResponse("The password has been sent to your email");
+    }
+
+    public OtherResponse<String> changePassword(ChangePasswordRequest request) {
+        if(!adminService.accountService.existsById(request.getUserId())) return new OtherResponse<>(BaseResponse.ERROR);
+        PasswordDTO dto = adminService.passwordService.findByUserId(request.getUserId());
+
+        if(!dto.getPass().equals(request.getOldPass())) return new OtherResponse<>(BaseResponse.ERROR);
+
+        if(request.getNewPass() == null || request.getNewPass().isEmpty()) return new OtherResponse<>(BaseResponse.ERROR);
+
+//        adminService.passwordService.update(request);
+        dto.setPass(request.getNewPass());
+
+        return adminService.passwordService.update(dto);
     }
 }

@@ -1,5 +1,6 @@
 package com.motel.motel.models.entities;
 
+import com.motel.motel.models.e.AccountStatus;
 import com.motel.motel.models.e.SexName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,8 @@ public class AccountDAO extends BaseEntity{
     @Enumerated(EnumType.ORDINAL)
     private SexName sex;
     private LocalDate dateOfBirth;
-    @Column(length = 100)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleId")
     private RoleDAO roleDAO;

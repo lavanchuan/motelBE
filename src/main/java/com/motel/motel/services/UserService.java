@@ -1,8 +1,11 @@
 package com.motel.motel.services;
 
+import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.*;
+import com.motel.motel.models.e.AccountStatus;
 import com.motel.motel.models.e.RoleName;
 import com.motel.motel.models.e.RoomStatus;
+import com.motel.motel.models.entities.AccountDAO;
 import com.motel.motel.models.entities.MakeAppointDAO;
 import com.motel.motel.models.mapper.AccountMapper;
 import com.motel.motel.models.request.BookingAppointRequest;
@@ -26,6 +29,12 @@ public class UserService {
 
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    DbContext dbContext;
+
+    @Autowired
+    AppSystemService appSystemService;
 
     public BaseResponse<?> infoOwner(int ownerId){
         if(!isOwner(ownerId)) return new AccountResponse(BaseResponse.ERROR);
@@ -136,6 +145,35 @@ public class UserService {
         return adminService.messageService.findAllBySenderReceiver(request.getSenderId(), request.getReceiverId());
     }
 
+
+    public AccountResponse registerOwner(int accountId) {
+        if(!dbContext.accountRepository.existsById(accountId)) return new AccountResponse(BaseResponse.ERROR);
+        AccountDAO dao = dbContext.accountRepository.findById(accountId).orElseThrow();
+        if(dao.getRoleDAO().getName() != RoleName.USER) return new AccountResponse(BaseResponse.ERROR);//TODO CHECK
+        if(!isValidRequestOwnerInfo(dao)) return new AccountResponse(BaseResponse.ERROR);
+//        dao.setRoleDAO(dbContext.roleRepository.findByName(RoleName.OWNER));
+        if(dao.getStatus() != null && dao.getStatus() == AccountStatus.REGIS_OWNER) return new AccountResponse(BaseResponse.ERROR);
+        dao.setStatus(AccountStatus.REGIS_OWNER);
+        dao = dbContext.accountRepository.save(dao);
+
+        // system sendmail
+        appSystemService.sendMailRegisOwner(dao.getMail());
+
+        return new AccountResponse(accountMapper.toDTO(dao));
+    }
+
+    private boolean isValidRequestOwnerInfo(AccountDAO dao) {
+        return dao.getName() != null && !dao.getName().isEmpty() &&
+                dao.getMail() != null && !dao.getMail().isEmpty() &&
+                dao.getAddress() != null && !dao.getAddress().isEmpty() &&
+                dao.getPhone() != null && !dao.getPhone().isEmpty() &&
+                dao.getCreateAt() != null &&
+                dao.getRoleDAO() != null &&
+                dao.getSex() != null &&
+                dao.getDateOfBirth() != null;
+
+    }
+
     // CLASS
     @Data
     public static class RoomOwnerResponse{
@@ -154,6 +192,9 @@ public class UserService {
             super(roomOwnerResponse);
         }
     }
+
+
+
 
     //
     public static final int INTERVAL_TIME_APPOINT_MINUTES = 60; //minute

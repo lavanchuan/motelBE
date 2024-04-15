@@ -47,7 +47,7 @@ public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbConte
             if(dto.getAddress() != null && !dto.getAddress().isEmpty()) dao.setAddress(dto.getAddress());
             if(dto.getSex() != null) dao.setSex(dto.getSex());
             if(dto.getDateOfBirth() != null) dao.setDateOfBirth(dto.getDateOfBirth());
-            if(dto.getStatus() != null && !dto.getStatus().isEmpty()) dao.setStatus(dto.getStatus());
+            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
 
             if(dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())){
                 dao.setRoleDAO(db.roleRepository.findById(dto.getRoleId()).orElseThrow());

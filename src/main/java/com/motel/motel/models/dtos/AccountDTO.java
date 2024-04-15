@@ -1,5 +1,6 @@
 package com.motel.motel.models.dtos;
 
+import com.motel.motel.models.e.AccountStatus;
 import com.motel.motel.models.e.RoleName;
 import com.motel.motel.models.e.SexName;
 import com.motel.motel.services.DateTimeFormatService;
@@ -25,7 +26,7 @@ public class AccountDTO {
     private String address;
     private SexName sex;
     private LocalDate dateOfBirth;
-    private String status;
+    private AccountStatus status;
     private int roleId;
     private RoleName role = RoleName.USER;
 
