@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -44,4 +45,20 @@ public interface AccountRepository extends JpaRepository<AccountDAO, Integer> {
             "inner join role on role.id = account.roleId \n" +
             "where role.name = 'ADMIN'", nativeQuery = true)
     List<AccountDAO> findAllByADMIN();
+
+    // LIST ACCOUNT BY SENDER ID
+    @Query(value = "select distinct account.* from account \n" +
+            "inner join message on message.receiverId = account.id \n" +
+            "where message.senderId = :senderId", nativeQuery = true)
+    List<AccountDAO> findAllBySenderId(@Param(value = "senderId") int senderId);
+
+    @Query(value = "select distinct account.* from account \n" +
+            "inner join role on role.id = account.roleId \n" +
+            "where role.name = 'USER'", nativeQuery = true)
+    List<AccountDAO> findAllUser();
+
+    @Query(value = "select distinct account.* from account \n" +
+            "inner join role on role.id = account.roleId \n" +
+            "where role.name = 'OWNER'", nativeQuery = true)
+    List<AccountDAO> findAllOwner();
 }

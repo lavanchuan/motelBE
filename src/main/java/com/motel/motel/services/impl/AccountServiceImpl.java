@@ -108,4 +108,25 @@ public class AccountServiceImpl implements ICRUDService<AccountDTO, Integer, Acc
         return dbContext.accountRepository.findAllByADMIN().stream().map(accountMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    //TODO list user by message senderId
+    public List<AccountDTO> findAllBySenderId(int senderId){
+        return dbContext.accountRepository.findAllBySenderId(senderId)
+                .stream().map(accountMapper::toDTO)
+                .toList();
+    }
+
+    public List<AccountDTO> findAllUser() {
+        return dbContext.accountRepository.findAllUser()
+                .stream().map(accountMapper::toDTO)
+                .toList();
+    }
+
+    public List<AccountDTO> findAllOwner() {
+        return dbContext.accountRepository.findAllOwner()
+                .stream().map(accountMapper::toDTO)
+                .toList();
+    }
+
+
 }

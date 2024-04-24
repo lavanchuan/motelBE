@@ -72,7 +72,18 @@ public class UserService {
         if(!isEmptyRoom(request.getMotelRoomId()))
             return new Response((IS_NOT_ROOM_EMPTY));
 
-        return adminService.makeAppointService.add(request);
+
+        BaseResponse<MakeAppointDTO> response = adminService.makeAppointService.add(request);
+
+        MakeAppointDTO detail = adminService.makeAppointService.findById(response.getData().getId());
+        MotelRoomDTO room = adminService.motelRoomService.findById(detail.getMotelRoomId());
+        AccountDTO user = adminService.accountService.findById(detail.getUserId());
+        MotelDTO motel = adminService.motelService.findById(room.getMotelId());
+        String receiver = adminService.accountService.findById(motel.getOwnerId()).getMail();
+
+        appSystemService.sendMailOwnerForBookAppoint(detail, room, user, motel, receiver);
+
+        return response;
     }
 
     private boolean isOneSelf(int userId, int motelRoomId) { // room is oneself userID
@@ -104,7 +115,7 @@ public class UserService {
 
     private boolean isEmptyRoom(int motelRoomId) {
         return adminService.motelRoomService.findById(motelRoomId)
-                .getStatus() == RoomStatus.VACANT_ROOM;
+                .getStatus() != RoomStatus.OCCUPIED_ROOM;
     }
 
     public BookRoomResponse bookingRoom(BookRoomDTO request) {
@@ -114,6 +125,7 @@ public class UserService {
         if(!isValidStartEndTime(request.getStartTime(), request.getEndTime())) return new BookRoomResponse(BaseResponse.ERROR);
         if(!isEmptyRoom(request.getMotelRoomId())) return new BookRoomResponse(BaseResponse.ERROR);
 
+        // send mail and notific -> in adminService.bookRoomService.add
         return adminService.bookRoomService.add(request);
     }
 

@@ -32,6 +32,12 @@ public class ApiController {
         return ResponseEntity.ok(adminService.reviewService.findAllByRoomId(motelRoomId));
     }
 
+    // Find Message All By SenderId
+    @GetMapping("/find-message-all-by-sender-id")
+    public ResponseEntity<?> findMessageAllBySenderId(@RequestParam(name = "senderId") int senderId){
+        return ResponseEntity.ok(adminService.messageService.findMessageAllOfSender(senderId));
+    }
+
     //TODO CHECK
     @GetMapping("/admin")
     public ResponseEntity<?> admin(){

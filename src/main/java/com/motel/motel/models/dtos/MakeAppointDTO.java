@@ -1,5 +1,6 @@
 package com.motel.motel.models.dtos;
 
+import com.motel.motel.models.e.MakeAppointStatus;
 import com.motel.motel.services.DateTimeFormatService;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class MakeAppointDTO {
     private LocalDateTime createAt;
     private LocalDateTime meetTime;
     private String reason;
-    private String status;
+    private MakeAppointStatus status;
     private int motelRoomId;
     private int userId;
 

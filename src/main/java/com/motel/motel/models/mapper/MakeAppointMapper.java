@@ -2,6 +2,7 @@ package com.motel.motel.models.mapper;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.MakeAppointDTO;
+import com.motel.motel.models.e.MakeAppointStatus;
 import com.motel.motel.models.entities.MakeAppointDAO;
 import com.motel.motel.services.DateTimeFormatService;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,8 @@ public class MakeAppointMapper implements BaseMapper<MakeAppointDAO, MakeAppoint
             if(dto.getCreateAt() != null) dao.setCreateAt(DateTimeFormatService.toLocalDateTime(dto.getCreateAt()));
             if(dto.getMeetTime() != null) dao.setMeetTime(DateTimeFormatService.toLocalDateTime(dto.getMeetTime()));
             if(!isEmptyString(dto.getReason())) dao.setReason(dto.getReason());
-            if(!isEmptyString(dto.getStatus())) dao.setStatus(dto.getStatus());
+            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
+            if(dto.getReason() != null && !dto.getReason().isEmpty()) dao.setReason(dto.getReason());
         } else {
             if(dto.getCreateAt() != null && !dto.getCreateAt().isEmpty()) {
                 // TODO
@@ -46,7 +48,8 @@ public class MakeAppointMapper implements BaseMapper<MakeAppointDAO, MakeAppoint
             dao.setMeetTime(DateTimeFormatService.toLocalDateTime(dto.getMeetTime()));
 
             dao.setReason(dto.getReason());
-            dao.setStatus(dto.getStatus());
+            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
+            else dao.setStatus(MakeAppointStatus.PROCESSING_CREATE);
         }
 
         if(dbContext.motelRoomRepository.existsById(dto.getMotelRoomId()))

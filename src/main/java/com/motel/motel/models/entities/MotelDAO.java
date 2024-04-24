@@ -1,5 +1,6 @@
 package com.motel.motel.models.entities;
 
+import com.motel.motel.models.e.MotelStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +23,8 @@ public class MotelDAO extends BaseEntity{
     private String electricPrice;
     @Column(length = 100)
     private String waterPrice;
-    private boolean status;
+    @Enumerated(EnumType.ORDINAL)
+    private MotelStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ownerId")
     private AccountDAO accountDAO;

@@ -2,6 +2,7 @@ package com.motel.motel.models.mapper;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
+import com.motel.motel.models.e.RoleName;
 import com.motel.motel.models.entities.AccountDAO;
 import com.motel.motel.services.DateTimeFormatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbContext>{
+public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbContext> {
 
     @Override
     public AccountDTO toDTO(AccountDAO accountDAO) {
@@ -26,8 +27,8 @@ public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbConte
         dto.setSex(accountDAO.getSex());
         dto.setDateOfBirth(accountDAO.getDateOfBirth());
         dto.setStatus(accountDAO.getStatus());
-        if(accountDAO.getRoleDAO() != null) dto.setRole(accountDAO.getRoleDAO().getName());
-        if(accountDAO.getRoleDAO() != null) dto.setRoleId(accountDAO.getRoleDAO().getId());
+        if (accountDAO.getRoleDAO() != null) dto.setRole(accountDAO.getRoleDAO().getName());
+        if (accountDAO.getRoleDAO() != null) dto.setRoleId(accountDAO.getRoleDAO().getId());
 
         return dto;
     }
@@ -36,22 +37,26 @@ public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbConte
     public AccountDAO toDAO(AccountDTO dto, DbContext db) {
         AccountDAO dao = new AccountDAO();
 
-        if(dto.getId() > 0 && db.accountRepository.existsById(dto.getId())){
+        if (dto.getId() > 0 && db.accountRepository.existsById(dto.getId())) {
             // update
             dao = db.accountRepository.findById(dto.getId()).orElseThrow();
 
-            if(dto.getCreateAt() != null) dao.setCreateAt(DateTimeFormatService.toLocalDateTime(dto.getCreateAt()));
-            if(dto.getName() != null && !dto.getName().isEmpty()) dao.setName(dto.getName());
-            if(dto.getMail() != null && !dto.getMail().isEmpty()) dao.setMail(dto.getMail());
-            if(dto.getPhone() != null && !dto.getPhone().isEmpty()) dao.setPhone(dto.getPhone());
-            if(dto.getAddress() != null && !dto.getAddress().isEmpty()) dao.setAddress(dto.getAddress());
-            if(dto.getSex() != null) dao.setSex(dto.getSex());
-            if(dto.getDateOfBirth() != null) dao.setDateOfBirth(dto.getDateOfBirth());
-            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
+            if (dto.getCreateAt() != null) dao.setCreateAt(DateTimeFormatService.toLocalDateTime(dto.getCreateAt()));
+            if (dto.getName() != null && !dto.getName().isEmpty()) dao.setName(dto.getName());
+            if (dto.getMail() != null && !dto.getMail().isEmpty()) dao.setMail(dto.getMail());
+            if (dto.getPhone() != null && !dto.getPhone().isEmpty()) dao.setPhone(dto.getPhone());
+            if (dto.getAddress() != null && !dto.getAddress().isEmpty()) dao.setAddress(dto.getAddress());
+            if (dto.getSex() != null) dao.setSex(dto.getSex());
+            if (dto.getDateOfBirth() != null) dao.setDateOfBirth(dto.getDateOfBirth());
+            if (dto.getStatus() != null) dao.setStatus(dto.getStatus());
 
-            if(dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())){
+            if (dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())) {
                 dao.setRoleDAO(db.roleRepository.findById(dto.getRoleId()).orElseThrow());
             }
+
+            //TODO role
+            if (dto.getRole() != null)
+                dao.setRoleDAO(db.roleRepository.findByName(dto.getRole()));
         } else {
             // add
             dao.setCreateAt(LocalDateTime.now());
@@ -63,10 +68,12 @@ public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbConte
             dao.setDateOfBirth(dto.getDateOfBirth());
             dao.setStatus(dto.getStatus());
 
-            if(dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())){
+            if (dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())) {
                 dao.setRoleDAO(db.roleRepository.findById(dto.getRoleId()).orElseThrow());
             } else {
-                dao.setRoleDAO(db.roleRepository.findByName(dto.getRole()));
+                if (dto.getRole() != null)
+                    dao.setRoleDAO(db.roleRepository.findByName(dto.getRole()));
+                else dao.setRoleDAO(db.roleRepository.findByName(RoleName.USER));
             }
         }
 

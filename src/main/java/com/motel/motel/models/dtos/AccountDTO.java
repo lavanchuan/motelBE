@@ -28,7 +28,7 @@ public class AccountDTO {
     private LocalDate dateOfBirth;
     private AccountStatus status;
     private int roleId;
-    private RoleName role = RoleName.USER;
+    private RoleName role;
 
 
     // DateTime Format

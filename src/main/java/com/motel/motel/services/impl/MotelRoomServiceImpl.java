@@ -35,16 +35,18 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
     @Override
     public MotelRoomResponse add(MotelRoomDTO dto) {
         if(dbContext.motelRoomRepository.existsById(dto.getId()))
-            return new MotelRoomResponse(BaseResponse.CONFLICT);
+            return new MotelRoomResponse(BaseResponse.ERROR);
 
-        MotelRoomDAO dao = dbContext.motelRoomRepository.save(motelRoomMapper.toDAO(dto, dbContext));
-
+        MotelRoomDAO dao = motelRoomMapper.toDAO(dto, dbContext);
+        dao = dbContext.motelRoomRepository.save(dao);
+        System.out.println("//TODO CHECK"); //TODO CHECK
         return new MotelRoomResponse(findById(dao.getId()));
     }
 
     @Override
     public MotelRoomResponse update(MotelRoomDTO motelRoomDTO) {
-        return null;
+        if(!dbContext.motelRoomRepository.existsById(motelRoomDTO.getId())) return new MotelRoomResponse(BaseResponse.ERROR);
+        return new MotelRoomResponse(motelRoomMapper.toDTO(dbContext.motelRoomRepository.save(motelRoomMapper.toDAO(motelRoomDTO, dbContext))));
     }
 
     @Override

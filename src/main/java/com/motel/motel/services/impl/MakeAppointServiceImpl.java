@@ -24,6 +24,9 @@ public class MakeAppointServiceImpl implements ICRUDService<MakeAppointDTO, Inte
     @Override
     public BaseResponse<MakeAppointDTO> add(MakeAppointDTO makeAppointDTO) {
 
+        if (dbContext.makeAppointRepository.existsById(makeAppointDTO.getId()))
+            return new MakeAppointResponse(BaseResponse.ERROR);
+
         return new MakeAppointResponse(makeAppointMapper.toDTO(dbContext
                 .makeAppointRepository.save(makeAppointMapper
                         .toDAO(makeAppointDTO, dbContext))));
@@ -31,7 +34,12 @@ public class MakeAppointServiceImpl implements ICRUDService<MakeAppointDTO, Inte
 
     @Override
     public BaseResponse<MakeAppointDTO> update(MakeAppointDTO makeAppointDTO) {
-        return null;
+        if (!dbContext.makeAppointRepository.existsById(makeAppointDTO.getId()))
+            return new MakeAppointResponse(BaseResponse.ERROR);
+
+        return new MakeAppointResponse(makeAppointMapper.toDTO(dbContext
+                .makeAppointRepository.save(makeAppointMapper
+                        .toDAO(makeAppointDTO, dbContext))));
     }
 
     @Override
@@ -48,13 +56,19 @@ public class MakeAppointServiceImpl implements ICRUDService<MakeAppointDTO, Inte
 
     @Override
     public MakeAppointDTO findById(Integer id) {
-        if(dbContext.makeAppointRepository.existsById(id))
+        if (dbContext.makeAppointRepository.existsById(id))
             return makeAppointMapper.toDTO(dbContext.makeAppointRepository.findById(id).orElseThrow());
         return null;
     }
 
+    public List<MakeAppointDTO> findAllByOwnerId(int ownerId) {
+        return dbContext.makeAppointRepository.findAllByOwnerId(ownerId)
+                .stream().map(makeAppointMapper::toDTO)
+                .toList();
+    }
+
     // CLASS
-    static class MakeAppointResponse extends BaseResponse<MakeAppointDTO>{
+    static class MakeAppointResponse extends BaseResponse<MakeAppointDTO> {
 
         public MakeAppointResponse(int status) {
             super(status);

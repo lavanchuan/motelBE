@@ -32,4 +32,7 @@ public class DbContext {
 
     @Autowired
     public MessageRepository messageRepository;
+
+    @Autowired
+    public NotificationRepository notificationRepository;
 }

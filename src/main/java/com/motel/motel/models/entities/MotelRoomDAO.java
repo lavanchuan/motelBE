@@ -22,7 +22,7 @@ public class MotelRoomDAO extends BaseEntity{
     private double price;
     private int sale;
     private String facility;
-    @Column(length = 100)
+//    @Column(length = 100)
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
