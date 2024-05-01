@@ -49,6 +49,9 @@ public class AdminService {
     @Autowired
     public ImageServiceImpl imageService;
 
+    @Autowired
+    public NotificationServiceImpl notificationService;
+
     //TODO confirm regis owner request
     public OtherResponse<String> confirmRegisOwnerRequest(int userId, boolean isConfirm) {
         if (!accountService.existsById(userId)) return new OtherResponse<>(BaseResponse.ERROR);

@@ -32,6 +32,17 @@ public class ApiController {
         return ResponseEntity.ok(adminService.reviewService.findAllByRoomId(motelRoomId));
     }
 
+    //TODO notification
+    @GetMapping("/notification-count-received")
+    public ResponseEntity<?> countNotificationReceived(@RequestParam(name = "receiverId") int receiverId){
+        return ResponseEntity.ok(adminService.notificationService.countNotificationReceived(receiverId));
+    }
+
+    @GetMapping("/notification-all")
+    public ResponseEntity<?> findAllNotification(@RequestParam(name = "receiverId") int receiverId){
+        return ResponseEntity.ok(adminService.notificationService.findAllByReceiverId(receiverId));
+    }
+
     // Find Message All By SenderId
     @GetMapping("/find-message-all-by-sender-id")
     public ResponseEntity<?> findMessageAllBySenderId(@RequestParam(name = "senderId") int senderId){
