@@ -3,13 +3,16 @@ package com.motel.motel.services.impl;
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.MotelDTO;
 import com.motel.motel.models.entities.MotelDAO;
+import com.motel.motel.models.mapper.AccountMapper;
 import com.motel.motel.models.mapper.MotelMapper;
 import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.models.response.OtherResponse;
 import com.motel.motel.services.ICRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +23,10 @@ public class MotelServiceImpl implements ICRUDService<MotelDTO, Integer, OtherRe
 
     @Autowired
     MotelMapper motelMapper;
+
+    //OTHER MAPPER
+    @Autowired
+    AccountMapper accountMapper;
 
     @Override
     public OtherResponse<MotelDTO> add(MotelDTO motelDTO) {
@@ -53,5 +60,24 @@ public class MotelServiceImpl implements ICRUDService<MotelDTO, Integer, OtherRe
 
     public boolean existsById(int motelId) {
         return dbContext.motelRepository.existsById(motelId);
+    }
+
+    public List<?> findAllForAdmin() {
+        List<ObjResponse.MotelOwnerDetail> response = new ArrayList<>();
+
+        List<MotelDTO> motels = dbContext.motelRepository.findAllForAdmin()
+                .stream().map(motelMapper::toDTO)
+                .toList();
+
+        for(MotelDTO motel : motels){
+            ObjResponse.MotelOwnerDetail obj = new ObjResponse.MotelOwnerDetail();
+            obj.setMotel(motel);
+
+            obj.setOwner(accountMapper.toDTO(dbContext.accountRepository.findById(motel.getOwnerId()).orElseThrow()));
+
+            response.add(obj);
+        }
+
+        return response;
     }
 }

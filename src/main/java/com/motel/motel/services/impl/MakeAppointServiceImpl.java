@@ -2,13 +2,19 @@ package com.motel.motel.services.impl;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.MakeAppointDTO;
+import com.motel.motel.models.e.MakeAppointStatus;
 import com.motel.motel.models.entities.MakeAppointDAO;
+import com.motel.motel.models.mapper.AccountMapper;
 import com.motel.motel.models.mapper.MakeAppointMapper;
+import com.motel.motel.models.mapper.MotelMapper;
+import com.motel.motel.models.mapper.MotelRoomMapper;
 import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.services.ICRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +26,14 @@ public class MakeAppointServiceImpl implements ICRUDService<MakeAppointDTO, Inte
 
     @Autowired
     MakeAppointMapper makeAppointMapper;
+
+    //OTHER MAPPER
+    @Autowired
+    AccountMapper accountMapper;
+    @Autowired
+    MotelRoomMapper roomMapper;
+    @Autowired
+    MotelMapper motelMapper;
 
     @Override
     public BaseResponse<MakeAppointDTO> add(MakeAppointDTO makeAppointDTO) {
@@ -65,6 +79,45 @@ public class MakeAppointServiceImpl implements ICRUDService<MakeAppointDTO, Inte
         return dbContext.makeAppointRepository.findAllByOwnerId(ownerId)
                 .stream().map(makeAppointMapper::toDTO)
                 .toList();
+    }
+
+    public List<?> findAllByUserId(int userId) {
+        List<ObjResponse.AppointDetail> response = new ArrayList<>();
+
+        List<MakeAppointDTO> appoints = findAll().stream()
+                .filter(appoint -> appoint.getUserId() == userId)
+                .toList();
+
+        for (MakeAppointDTO element : appoints) {
+            ObjResponse.AppointDetail obj = new ObjResponse.AppointDetail();
+            obj.setAppoint(element);
+
+//            obj.setUser(accountMapper.toDTO(dbContext.accountRepository.findById(element.getUserId()).orElseThrow()));
+
+            obj.setRoom(roomMapper.toDTO(dbContext.motelRoomRepository.findById(element.getMotelRoomId()).orElseThrow()));
+
+            obj.setMotel(motelMapper.toDTO(dbContext.motelRepository
+                    .findById(obj.getRoom().getMotelId()).orElseThrow()));
+
+            obj.setOwner(accountMapper.toDTO(dbContext.accountRepository
+                    .findById(obj.getMotel().getOwnerId()).orElseThrow()));
+
+            response.add(obj);
+        }
+
+        return response;
+    }
+
+    public List<?> cancelAppoint(int appointId) {
+        if(!dbContext.makeAppointRepository.existsById(appointId)) return null;
+
+        MakeAppointDTO appointDTO = makeAppointMapper.toDTO(dbContext.makeAppointRepository
+                .findById(appointId).orElseThrow());
+
+        appointDTO.setStatus(MakeAppointStatus.CANCELLED);
+        dbContext.makeAppointRepository.save(makeAppointMapper.toDAO(appointDTO, dbContext));
+
+        return findAllByUserId(appointDTO.getUserId());
     }
 
     // CLASS

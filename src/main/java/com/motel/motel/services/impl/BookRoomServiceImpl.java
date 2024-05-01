@@ -6,9 +6,13 @@ import com.motel.motel.models.dtos.BookRoomDTO;
 import com.motel.motel.models.dtos.MotelDTO;
 import com.motel.motel.models.dtos.MotelRoomDTO;
 import com.motel.motel.models.entities.BookRoomDAO;
+import com.motel.motel.models.mapper.AccountMapper;
 import com.motel.motel.models.mapper.BookRoomMapper;
+import com.motel.motel.models.mapper.MotelMapper;
+import com.motel.motel.models.mapper.MotelRoomMapper;
 import com.motel.motel.models.response.BaseResponse;
 import com.motel.motel.models.response.BookRoomResponse;
+import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.services.AppSystemService;
 import com.motel.motel.services.ICRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +42,21 @@ public class BookRoomServiceImpl implements ICRUDService<BookRoomDTO, Integer, B
     @Autowired
     MotelRoomServiceImpl motelRoomService;
 
+    //OTHER MAPPER
+    @Autowired
+    AccountMapper accountMapper;
+    @Autowired
+    MotelRoomMapper roomMapper;
+    @Autowired
+    MotelMapper motelMapper;
+
     @Override
     public BookRoomResponse add(BookRoomDTO bookRoomDTO) {
         if (dbContext.bookRoomRepository.existsById(bookRoomDTO.getId()))
             return new BookRoomResponse(BaseResponse.ERROR);
 
-        if(bookRoomDTO.getCreateAt() == null || bookRoomDTO.getCreateAt().isEmpty()) bookRoomDTO.setCreateAt(LocalDateTime.now());
+        if (bookRoomDTO.getCreateAt() == null || bookRoomDTO.getCreateAt().isEmpty())
+            bookRoomDTO.setCreateAt(LocalDateTime.now());
 
         BookRoomDAO dao = dbContext.bookRoomRepository.save(bookRoomMapper.toDAO(bookRoomDTO, dbContext));
 
@@ -63,7 +76,8 @@ public class BookRoomServiceImpl implements ICRUDService<BookRoomDTO, Integer, B
 
     @Override
     public BookRoomResponse update(BookRoomDTO bookRoomDTO) {
-        if(!dbContext.bookRoomRepository.existsById(bookRoomDTO.getId())) return new BookRoomResponse(BaseResponse.ERROR);
+        if (!dbContext.bookRoomRepository.existsById(bookRoomDTO.getId()))
+            return new BookRoomResponse(BaseResponse.ERROR);
         bookRoomMapper.toDTO(dbContext.bookRoomRepository.save(bookRoomMapper.toDAO(bookRoomDTO, dbContext)));
         return new BookRoomResponse(findAll().stream().filter(bookRoom -> bookRoom.getUserId() == bookRoomDTO.getUserId())
                 .toList());
@@ -84,5 +98,38 @@ public class BookRoomServiceImpl implements ICRUDService<BookRoomDTO, Integer, B
     @Override
     public BookRoomDTO findById(Integer id) {
         return bookRoomMapper.toDTO(dbContext.bookRoomRepository.findById(id).orElseThrow());
+    }
+
+    public List<?> findAllByUserId(int userId) {
+        List<ObjResponse.BookingDetail> response = new ArrayList<>();
+
+        List<BookRoomDTO> bookings = findAll().stream()
+                .filter(booking -> booking.getUserId() == userId)
+                .toList();
+
+        for (BookRoomDTO booking : bookings) {
+            ObjResponse.BookingDetail obj = new ObjResponse.BookingDetail();
+
+            obj.setBooking(booking);
+
+            obj.setRoom(roomMapper.toDTO(dbContext.motelRoomRepository
+                    .findById(booking.getMotelRoomId()).orElseThrow()));
+
+            obj.setMotel(motelMapper.toDTO(dbContext.motelRepository
+                    .findById(obj.getRoom().getMotelId()).orElseThrow()));
+
+            obj.setOwner(accountMapper.toDTO(dbContext.accountRepository
+                    .findById(obj.getMotel().getOwnerId()).orElseThrow()));
+
+            response.add(obj);
+        }
+
+        return response;
+    }
+
+    public List<BookRoomDTO> findAllBookingByOwnerId(int ownerId) {
+        return dbContext.bookRoomRepository.findAllBookingByOwnerId(ownerId)
+                .stream().map(bookRoomMapper::toDTO)
+                .toList();
     }
 }

@@ -43,4 +43,11 @@ public class ApiController {
     public ResponseEntity<?> admin(){
         return ResponseEntity.ok(adminService.accountService.findAllAdmin());
     }
+
+    //TODO Image
+    @GetMapping("/image-all")
+    public ResponseEntity<?> findAllImageByRoomId(@RequestParam(name = "roomId") int roomId){
+        return ResponseEntity.ok(adminService.imageService.findAllByRoomId(roomId));
+    }
+
 }

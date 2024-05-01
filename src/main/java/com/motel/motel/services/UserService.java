@@ -179,9 +179,9 @@ public class UserService {
                 dao.getMail() != null && !dao.getMail().isEmpty() &&
                 dao.getAddress() != null && !dao.getAddress().isEmpty() &&
                 dao.getPhone() != null && !dao.getPhone().isEmpty() &&
-                dao.getCreateAt() != null &&
+//                dao.getCreateAt() != null &&
                 dao.getRoleDAO() != null &&
-                dao.getSex() != null &&
+//                dao.getSex() != null &&
                 dao.getDateOfBirth() != null;
 
     }
@@ -192,6 +192,7 @@ public class UserService {
         private AccountDTO owner;
         private MotelRoomDTO room;
         private MotelDTO motel;
+        private List<ImageDTO> images;
     }
 
     public static class Response extends BaseResponse<RoomOwnerResponse>{

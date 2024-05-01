@@ -29,6 +29,11 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
     @Autowired
     MotelRoomMapper motelRoomMapper;
 
+    //OTHER service
+    @Autowired
+    ImageServiceImpl imageService;
+
+    //OTHER MAPPER
     @Autowired
     MotelMapper motelMapper;
 
@@ -73,9 +78,11 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
             AccountDTO owner = accountMapper.toDTO(dbContext.accountRepository.findByRoomId(room.getId()));
             UserService.RoomOwnerResponse roomOwner = new UserService.RoomOwnerResponse();
             MotelDTO motel = motelMapper.toDTO(dbContext.motelRepository.findById(room.getMotelId()).orElseThrow());
+
             roomOwner.setOwner(owner);
             roomOwner.setRoom(room);
             roomOwner.setMotel(motel);
+            roomOwner.setImages(imageService.findAllByRoomId(room.getId()));
 
             result.add(new RoomOwnerResponse(roomOwner));
         }
@@ -96,5 +103,30 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
 
     public boolean isOneSelf(int userId, int motelRoomId) {
         return dbContext.motelRoomRepository.isOneSelf(userId, motelRoomId) == 1;
+    }
+
+    public List<?> findRoomAllForAdmin() {
+        List<UserService.RoomOwnerResponse> response = new ArrayList<>();
+
+        List<MotelRoomDTO> rooms = dbContext.motelRoomRepository.findAllForAdmin()
+                .stream().map(motelRoomMapper::toDTO)
+                .toList();
+
+        for(MotelRoomDTO room : rooms){
+            UserService.RoomOwnerResponse obj = new UserService.RoomOwnerResponse();
+            obj.setRoom(room);
+
+            obj.setMotel(motelMapper.toDTO(dbContext.motelRepository
+                    .findById(room.getMotelId()).orElseThrow()));
+
+            obj.setOwner(accountMapper.toDTO(dbContext.accountRepository
+                    .findById(obj.getMotel().getOwnerId()).orElseThrow()));
+
+            obj.setImages(imageService.findAllByRoomId(room.getId()));
+
+            response.add(obj);
+        }
+
+        return response;
     }
 }

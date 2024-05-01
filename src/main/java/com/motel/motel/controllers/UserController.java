@@ -41,6 +41,17 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    //TODO APPOINT
+    @GetMapping("/appoint-all")
+    public ResponseEntity<?> findAllAppointByUserId(@RequestParam(name = "userId") int userId){
+        return ResponseEntity.ok(adminService.makeAppointService.findAllByUserId(userId));
+    }
+
+    @PutMapping("/cancel-appoint")
+    public ResponseEntity<?> cancelAppoint(@RequestParam(name = "appointId") int appointId){
+        return ResponseEntity.ok(adminService.makeAppointService.cancelAppoint(appointId));
+    }
+
     @PostMapping("/booking-appoint")
     public ResponseEntity<?> bookAppoint(@RequestBody MakeAppointDTO request){
         BaseResponse<?> response = userService.bookingAppoint(request);
@@ -55,6 +66,11 @@ public class UserController {
     }
 
     //TODO BookRoom
+    @GetMapping("/booking-all")
+    public ResponseEntity<?> bookingAllByUserId(@RequestParam(name = "userId") int userId){
+        return ResponseEntity.ok(adminService.bookRoomService.findAllByUserId(userId));
+    }
+
     @PostMapping("/booking-room") // return list booking of userId
     public ResponseEntity<?> bookingRoom(@RequestBody BookRoomDTO request){
         BookRoomResponse response = userService.bookingRoom(request);
@@ -64,6 +80,8 @@ public class UserController {
             default: return ResponseEntity.ok(response);
         }
     }
+
+
 
     //TODO Review
     @PostMapping("/review-add")

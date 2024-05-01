@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Repository
 public interface MotelRoomRepository extends JpaRepository<MotelRoomDAO, Integer> {
 
@@ -15,4 +18,10 @@ public interface MotelRoomRepository extends JpaRepository<MotelRoomDAO, Integer
             "and motelRoom.id = :motelRoomId", nativeQuery = true)
     int isOneSelf(@Param(value = "userId") int userId,
                   @Param(value = "motelRoomId") int motelRoomId);
+
+    @Query(value = "select distinct motelRoom.* from motelRoom \n" +
+            "inner join motel on motel.id = motelRoom.motelId \n" +
+            "order by motelRoom.status asc, motelRoom.motelId asc, \n" +
+            "motel.ownerId asc", nativeQuery = true)
+    List<MotelRoomDAO> findAllForAdmin();
 }

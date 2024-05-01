@@ -35,4 +35,7 @@ public class DbContext {
 
     @Autowired
     public NotificationRepository notificationRepository;
+
+    @Autowired
+    public ImageRepository imageRepository;
 }

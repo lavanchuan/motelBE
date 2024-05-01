@@ -25,6 +25,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.accountService.findAllOwner());
     }
 
+    //TODO motel
+    @GetMapping("/motel-all")
+    public ResponseEntity<?> findAllMotel(){
+        return ResponseEntity.ok(adminService.motelService.findAllForAdmin());
+    }
+
     //TODO all room with add request
     @GetMapping("/find-all-room-add")
     public ResponseEntity<?>findAllRoomAdd(){
@@ -56,6 +62,11 @@ public class AdminController {
     }
 
     //TODO confirm add room
+    @GetMapping("/room-all")
+    public ResponseEntity<?> findAllRoomDetail(){
+        return ResponseEntity.ok(adminService.motelRoomService.findRoomAllForAdmin());
+    }
+
     @PutMapping("/confirm-add-room")
     public ResponseEntity<?> confirmAddRoom(@RequestBody ConfirmRequest request,
                                             @RequestParam(name = "adminId") int adminId){

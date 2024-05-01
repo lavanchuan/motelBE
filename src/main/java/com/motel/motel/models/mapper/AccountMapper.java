@@ -2,6 +2,7 @@ package com.motel.motel.models.mapper;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
+import com.motel.motel.models.e.AccountStatus;
 import com.motel.motel.models.e.RoleName;
 import com.motel.motel.models.entities.AccountDAO;
 import com.motel.motel.services.DateTimeFormatService;
@@ -66,7 +67,8 @@ public class AccountMapper implements BaseMapper<AccountDAO, AccountDTO, DbConte
             dao.setAddress(dto.getAddress());
             dao.setSex(dto.getSex());
             dao.setDateOfBirth(dto.getDateOfBirth());
-            dao.setStatus(dto.getStatus());
+            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
+            else dao.setStatus(AccountStatus.NORMAL);
 
             if (dto.getRoleId() > 0 && db.roleRepository.existsById(dto.getRoleId())) {
                 dao.setRoleDAO(db.roleRepository.findById(dto.getRoleId()).orElseThrow());

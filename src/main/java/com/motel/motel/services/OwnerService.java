@@ -3,6 +3,7 @@ package com.motel.motel.services;
 import com.motel.motel.models.dtos.*;
 import com.motel.motel.models.e.BookRoomStatus;
 import com.motel.motel.models.e.MakeAppointStatus;
+import com.motel.motel.models.e.MotelStatus;
 import com.motel.motel.models.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -165,12 +166,53 @@ public class OwnerService {
         List<MakeAppointDetail> result = new ArrayList<>();
 
         List<MakeAppointDTO> makeAppointDTOList = adminService.makeAppointService.findAllByOwnerId(ownerId);
-        for(MakeAppointDTO makeAppoint : makeAppointDTOList){
+        for (MakeAppointDTO makeAppoint : makeAppointDTOList) {
             MotelRoomDTO room = adminService.motelRoomService.findById(makeAppoint.getMotelRoomId());
             MotelDTO motel = adminService.motelService.findById(room.getMotelId());
             result.add(new MakeAppointDetail(makeAppoint, room, motel));
         }
 
         return result;
+    }
+
+    public ObjResponse.CountMotelActive countMotelActivate(int ownerId) {
+        int countActivate = adminService.motelService.findAll().stream()
+                .filter(motel -> motel.getOwnerId() == ownerId &&
+                        motel.getStatus() == MotelStatus.ACTIVATING)
+                .toList().size();
+
+        int count = adminService.motelService.findAll().stream()
+                .filter(motel -> motel.getOwnerId() == ownerId)
+                .toList().size();
+
+        if (count == 0) return new ObjResponse.CountMotelActive();
+
+        return new ObjResponse.CountMotelActive(countActivate, count);
+    }
+
+    public List<ObjResponse.BookingDetail> findAllBookingByOwnerId(int ownerId) {
+        List<ObjResponse.BookingDetail> response = new ArrayList<>();
+
+        List<BookRoomDTO> bookings = adminService.bookRoomService.findAllBookingByOwnerId(ownerId);
+
+        for(BookRoomDTO booking : bookings){
+            ObjResponse.BookingDetail obj = new ObjResponse.BookingDetail();
+
+            obj.setBooking(booking);
+
+            obj.setUser(adminService.accountService.findById(booking.getUserId()));
+
+            obj.setRoom(adminService.motelRoomService.findById(booking.getMotelRoomId()));
+
+            obj.setMotel(adminService.motelService.findById(obj.getRoom().getMotelId()));
+
+            response.add(obj);
+        }
+
+        return response;
+    }
+
+    public OtherResponse<?> addRoomImage(ImageDTO request) {
+        return adminService.imageService.add(request);
     }
 }
