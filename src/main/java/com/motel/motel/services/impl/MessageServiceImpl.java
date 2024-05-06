@@ -3,10 +3,12 @@ package com.motel.motel.services.impl;
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
 import com.motel.motel.models.dtos.MessageDTO;
+import com.motel.motel.models.e.MessageStatus;
 import com.motel.motel.models.entities.MessageDAO;
 import com.motel.motel.models.mapper.MessageMapper;
 import com.motel.motel.models.response.BaseResponse;
 import com.motel.motel.models.response.MessageResponse;
+import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.models.response.OtherResponse;
 import com.motel.motel.services.ICRUDService;
 import lombok.Data;
@@ -39,8 +41,10 @@ public class MessageServiceImpl implements ICRUDService<MessageDTO, Integer, Mes
     }
 
     @Override
-    public MessageResponse update(MessageDTO messageDTO) {
-        return null;
+    public MessageResponse update(MessageDTO request) {
+        if(!dbContext.messageRepository.existsById(request.getId())) return new MessageResponse(BaseResponse.ERROR);
+        dbContext.messageRepository.save(messageMapper.toDAO(request, dbContext));
+        return new MessageResponse(findById(request.getId()));
     }
 
     @Override
@@ -80,6 +84,15 @@ public class MessageServiceImpl implements ICRUDService<MessageDTO, Integer, Mes
         data.setMessageAllOfReceiverList(messageAllOfReceiverList);
 
         return new OtherResponse<>(data);
+    }
+
+    public ObjResponse.BaseCount countMessageReceived(int receiverId) {
+        int count = (int) dbContext.messageRepository.findAllReceived(receiverId)
+                .stream().map(messageMapper::toDTO)
+                .filter(message -> message.getStatus() == MessageStatus.SANDED)
+                .count();
+
+        return new ObjResponse.BaseCount(count);
     }
 
     // class

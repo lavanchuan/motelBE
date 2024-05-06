@@ -32,6 +32,8 @@ public class NotificationMapper implements BaseMapper<NotificationDAO, Notificat
         NotificationDAO dao = new NotificationDAO();
 
         if (dbContext.notificationRepository.existsById(dto.getId())) {
+            dao = dbContext.notificationRepository.findById(dto.getId()).orElseThrow();
+
             if (dto.getCreateAt() != null && !dto.getCreateAt().isEmpty())
                 dao.setCreateAt(DateTimeFormatService.toLocalDateTime(dto.getCreateAt()));
             if (dto.getMessage() != null && !dto.getMessage().isEmpty()) dao.setMessage(dto.getMessage());

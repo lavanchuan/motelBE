@@ -1,12 +1,13 @@
 package com.motel.motel.controllers;
 
+import com.motel.motel.models.dtos.MessageDTO;
+import com.motel.motel.models.dtos.NotificationDTO;
+import com.motel.motel.models.e.MessageStatus;
+import com.motel.motel.models.e.NotificationStatus;
 import com.motel.motel.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -43,10 +44,33 @@ public class ApiController {
         return ResponseEntity.ok(adminService.notificationService.findAllByReceiverId(receiverId));
     }
 
+    @PutMapping("/read-notification")
+    public ResponseEntity<?> readNotification(@RequestBody NotificationDTO request){
+        request.setStatus(NotificationStatus.READ);
+        adminService.notificationService.update(request);
+        return findAllNotification(request.getReceiverId());
+    }
+
+    @PutMapping("/read-message")
+    public ResponseEntity<?> readMessage(@RequestBody MessageDTO request){
+        request.setStatus(MessageStatus.READ);
+        return ResponseEntity.ok(adminService.messageService.update(request));
+    }
+
     // Find Message All By SenderId
     @GetMapping("/find-message-all-by-sender-id")
     public ResponseEntity<?> findMessageAllBySenderId(@RequestParam(name = "senderId") int senderId){
         return ResponseEntity.ok(adminService.messageService.findMessageAllOfSender(senderId));
+    }
+
+    @PostMapping("/send-message")
+    public ResponseEntity<?> sendMessage(@RequestBody MessageDTO request){
+        return ResponseEntity.ok(adminService.messageService.add(request));
+    }
+
+    @GetMapping("/message-count-received")
+    public ResponseEntity<?> countMessageReceived(@RequestParam(name = "receiverId") int receiverId){
+        return ResponseEntity.ok(adminService.messageService.countMessageReceived(receiverId));
     }
 
     //TODO CHECK

@@ -124,7 +124,7 @@ public class AppSystemService {
         dto.setReceiverId(ownerId);
         dto.setSenderId(adminId);
         dto.setMessage("Incoming booking room request");
-        dto.setNavigate("/book-room");//TODO NAVIGATE CLIENT
+        dto.setNavigate("/owner-home");//TODO NAVIGATE CLIENT
         notificationService.add(dto);
     }
 
@@ -142,7 +142,7 @@ public class AppSystemService {
         dto.setReceiverId(ownerId);
         dto.setSenderId(adminId);
         dto.setMessage("Incoming booking appoint request");
-        dto.setNavigate("/book-appoint");//TODO NAVIGATE CLIENT
+        dto.setNavigate("/owner-home");//TODO NAVIGATE CLIENT
         notificationService.add(dto);
     }
 
@@ -178,7 +178,7 @@ public class AppSystemService {
     public void sendUserNotificationForOwnerConfirmBookRoom(int receiverId, boolean isConfirm) {
         NotificationDTO dto = new NotificationDTO();
         dto.setMessage(String.format("You room booking %s", isConfirm?"confirmed":"rejected"));
-        dto.setNavigate("/book-room");
+        dto.setNavigate("/user-info");
         dto.setReceiverId(receiverId);
         notificationService.add(dto);
     }
@@ -186,7 +186,7 @@ public class AppSystemService {
     public void sendUserNotificationForOwnerConfirmBookAppoint(int receiverId, boolean isConfirm) {
         NotificationDTO dto = new NotificationDTO();
         dto.setMessage(String.format("You appoint booking %s", isConfirm?"confirmed":"rejected"));
-        dto.setNavigate("/book-appoint");
+        dto.setNavigate("/user-info");
         dto.setReceiverId(receiverId);
         notificationService.add(dto);
     }
@@ -219,6 +219,7 @@ public class AppSystemService {
     public void sendAdminNotificationForOwnerAddRoom(int ownerId) {
         AccountDTO owner = accountService.findById(ownerId);
         NotificationDTO dto = new NotificationDTO();
+        dto.setNavigate("/admin-home");
         dto.setMessage("Has one add room request from " + owner.getMail());
         for(AccountDTO admin : accountService.findAllAdmin()){
             dto.setReceiverId(admin.getId());
