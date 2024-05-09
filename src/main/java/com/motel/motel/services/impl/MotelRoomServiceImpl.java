@@ -129,4 +129,36 @@ public class MotelRoomServiceImpl implements ICRUDService<MotelRoomDTO, Integer,
 
         return response;
     }
+
+    public List<RoomOwnerResponse> searchByAddressAndPrice(String address, float minPrice, float maxPrice) {
+        List<RoomOwnerResponse> response = new ArrayList<>();
+
+        List<MotelRoomDTO> rooms = dbContext.motelRoomRepository.searchByAddress(address)
+                .stream().map(motelRoomMapper::toDTO).toList();
+
+        if(minPrice > 0) rooms = rooms.stream()
+                .filter(room -> room.getPrice() >= minPrice)
+                .toList();
+
+        if(maxPrice > 0 && maxPrice > minPrice) rooms = rooms.stream()
+                .filter(room -> room.getPrice() <= maxPrice)
+                .toList();
+
+        for(MotelRoomDTO room : rooms) {
+            RoomOwnerResponse res = new RoomOwnerResponse(200);
+            UserService.RoomOwnerResponse obj = new UserService.RoomOwnerResponse();
+            obj.setRoom(room);
+            obj.setMotel(motelMapper.toDTO(dbContext.motelRepository
+                    .findById(room.getMotelId()).orElseThrow()));
+            obj.setOwner(accountMapper.toDTO(dbContext.accountRepository
+                    .findById(obj.getMotel().getOwnerId()).orElseThrow()));
+            obj.setImages(imageService.findAllByRoomId(room.getId()));
+
+            res.setData(obj);
+
+            response.add(res);
+        }
+
+        return response;
+    }
 }

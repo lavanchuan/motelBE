@@ -2,6 +2,7 @@ package com.motel.motel.models.mapper;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.BookRoomDTO;
+import com.motel.motel.models.e.BookRoomStatus;
 import com.motel.motel.models.entities.BookRoomDAO;
 import com.motel.motel.services.DateTimeFormatService;
 import org.springframework.stereotype.Component;
@@ -50,7 +51,8 @@ public class BookRoomMapper implements BaseMapper<BookRoomDAO, BookRoomDTO, DbCo
 
             dao.setPrice(bookRoomDTO.getPrice());
 
-            dao.setStatus(bookRoomDTO.getStatus());
+            if(bookRoomDTO.getStatus() != null) dao.setStatus(bookRoomDTO.getStatus());
+            else dao.setStatus(BookRoomStatus.PROCESSING);
 
             dao.setReason(bookRoomDTO.getReason());
         }

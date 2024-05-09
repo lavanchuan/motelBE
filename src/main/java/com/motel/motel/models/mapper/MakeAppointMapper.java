@@ -48,7 +48,7 @@ public class MakeAppointMapper implements BaseMapper<MakeAppointDAO, MakeAppoint
             dao.setMeetTime(DateTimeFormatService.toLocalDateTime(dto.getMeetTime()));
 
             dao.setReason(dto.getReason());
-            if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
+if(dto.getStatus() != null) dao.setStatus(dto.getStatus());
             else dao.setStatus(MakeAppointStatus.PROCESSING_CREATE);
         }
 

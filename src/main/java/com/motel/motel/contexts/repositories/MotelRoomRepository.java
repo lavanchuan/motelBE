@@ -24,4 +24,9 @@ public interface MotelRoomRepository extends JpaRepository<MotelRoomDAO, Integer
             "order by motelRoom.status asc, motelRoom.motelId asc, \n" +
             "motel.ownerId asc", nativeQuery = true)
     List<MotelRoomDAO> findAllForAdmin();
+
+    @Query(value = "select motelRoom.* from motelRoom \n" +
+            "inner join motel on motel.id = motelRoom.motelId \n" +
+            "where motel.address like %:address%", nativeQuery = true)
+    List<MotelRoomDAO> searchByAddress(@Param(value = "address") String address);
 }
