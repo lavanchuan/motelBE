@@ -178,7 +178,8 @@ public class OwnerService {
     public ObjResponse.CountMotelActive countMotelActivate(int ownerId) {
         int countActivate = adminService.motelService.findAll().stream()
                 .filter(motel -> motel.getOwnerId() == ownerId &&
-                        motel.getStatus() == MotelStatus.ACTIVATING)
+                        (motel.getStatus() == MotelStatus.ACTIVATING ||
+                                motel.getStatus() == MotelStatus.CONFIRMED_CREATE_REQUEST))
                 .toList().size();
 
         int count = adminService.motelService.findAll().stream()
@@ -195,7 +196,7 @@ public class OwnerService {
 
         List<BookRoomDTO> bookings = adminService.bookRoomService.findAllBookingByOwnerId(ownerId);
 
-        for(BookRoomDTO booking : bookings){
+        for (BookRoomDTO booking : bookings) {
             ObjResponse.BookingDetail obj = new ObjResponse.BookingDetail();
 
             obj.setBooking(booking);

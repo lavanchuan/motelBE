@@ -42,7 +42,7 @@ public class MessageServiceImpl implements ICRUDService<MessageDTO, Integer, Mes
 
     @Override
     public MessageResponse update(MessageDTO request) {
-        if(!dbContext.messageRepository.existsById(request.getId())) return new MessageResponse(BaseResponse.ERROR);
+        if (!dbContext.messageRepository.existsById(request.getId())) return new MessageResponse(BaseResponse.ERROR);
         dbContext.messageRepository.save(messageMapper.toDAO(request, dbContext));
         return new MessageResponse(findById(request.getId()));
     }
@@ -75,7 +75,7 @@ public class MessageServiceImpl implements ICRUDService<MessageDTO, Integer, Mes
         data.setSender(accountService.findById(senderId));
         List<MessageAllOfReceiver> messageAllOfReceiverList = new ArrayList<>();
 
-        for(int receiverId : receiverIds){
+        for (int receiverId : receiverIds) {
             MessageAllOfReceiver messageAllOfReceiver = new MessageAllOfReceiver();
             messageAllOfReceiver.setReceiver(accountService.findById(receiverId));
             messageAllOfReceiver.setMessageList(findAllBySenderReceiver(senderId, receiverId));
@@ -93,6 +93,50 @@ public class MessageServiceImpl implements ICRUDService<MessageDTO, Integer, Mes
                 .count();
 
         return new ObjResponse.BaseCount(count);
+    }
+
+    public MessageAllOfReceiver messageAllSenderAndReceiver(int senderId, int receiverId) {
+        MessageAllOfReceiver response = new MessageAllOfReceiver();
+
+        response.setReceiver(accountService.findById(receiverId));
+        response.setMessageList(findAllBySenderReceiver(senderId, receiverId));
+
+        return response;
+    }
+
+    public OtherResponse<MessageAllOfSender> messageAllByUserId(int userId) {
+        MessageAllOfSender response = new MessageAllOfSender();
+        response.setSender(accountService.findById(userId));
+
+        List<MessageAllOfReceiver> messageList = new ArrayList<>();
+
+        List<Integer> ids = new ArrayList<>();
+        List<MessageDTO> dtos = dbContext.messageRepository.findAllByUserId(userId)
+                .stream().map(messageMapper::toDTO).toList();
+
+        boolean isAdd;
+        int id;
+        for (MessageDTO dto : dtos) {
+            isAdd = false;
+            if (dto.getSenderId() != userId && !ids.contains(dto.getSenderId())) {
+                ids.add(dto.getSenderId());
+                isAdd = true;
+                id = dto.getSenderId();
+            } else if (dto.getSenderId() == userId && !ids.contains(dto.getReceiverId())) {
+                ids.add(dto.getReceiverId());
+                isAdd = true;
+                id = dto.getReceiverId();
+            } else {continue;}
+            if(isAdd){
+                MessageAllOfReceiver obj = new MessageAllOfReceiver();
+                obj.setReceiver(accountService.findById(id));
+                obj.setMessageList(findAllBySenderReceiver(userId, id));
+                messageList.add(obj);
+            }
+        }
+
+        response.setMessageAllOfReceiverList(messageList);
+        return new OtherResponse<>(response);
     }
 
     // class

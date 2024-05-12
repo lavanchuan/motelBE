@@ -25,4 +25,9 @@ public interface MessageRepository extends JpaRepository<MessageDAO, Integer> {
     @Query(value = "select message.* from message \n" +
             "where receiverId = :receiverId", nativeQuery = true)
     List<MessageDAO> findAllReceived(@Param(value = "receiverId") int receiverId);
+
+    @Query(value = "select message.* from message \n" +
+            "where senderId = :userId \n" +
+            "or receiverId = :userId", nativeQuery = true)
+    List<MessageDAO> findAllByUserId(@Param(value = "userId") int userId);
 }

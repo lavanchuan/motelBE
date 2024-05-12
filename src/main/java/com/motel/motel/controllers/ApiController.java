@@ -66,6 +66,17 @@ public class ApiController {
         return ResponseEntity.ok(adminService.messageService.findMessageAllOfSender(senderId));
     }
 
+    @GetMapping("message-all-by-user-id")
+    public ResponseEntity<?> messageAllByUserId(@RequestParam(name = "userId") int userId){
+        return ResponseEntity.ok(adminService.messageService.messageAllByUserId(userId));
+    }
+
+    @GetMapping("/message-all")
+    public ResponseEntity<?> messageAllSenderAndReceiver(@RequestParam(name = "senderId") int senderId,
+                                                         @RequestParam(name = "receiverId") int receiverId) {
+        return ResponseEntity.ok(adminService.messageService.messageAllSenderAndReceiver(senderId, receiverId));
+    }
+
     @PostMapping("/send-message")
     public ResponseEntity<?> sendMessage(@RequestBody MessageDTO request) {
         return ResponseEntity.ok(adminService.messageService.add(request));
