@@ -18,4 +18,18 @@ public interface BookRoomRepository extends JpaRepository<BookRoomDAO, Integer> 
             "where motel.ownerId = :ownerId \n" +
             "order by bookRoom.createAt desc", nativeQuery = true)
     List<BookRoomDAO> findAllBookingByOwnerId(@Param(value = "ownerId") int ownerId);
+
+    @Query(value = "select bookRoom.* from bookRoom \n" +
+            "where motelRoomId = :roomId \n" +
+            "and userId = :userId", nativeQuery = true)
+    List<BookRoomDAO> findAllByUserIdRoomId(@Param(value = "userId") int userId,
+                                            @Param(value = "roomId") int roomId);
+
+    @Query(value = "select * from bookRoom \n" +
+            "where motelRoomId = :roomId \n" +
+            "and userId = :userId \n" +
+            "order by createAt desc " +
+            "limit 1", nativeQuery = true)
+    BookRoomDAO lastBookingRoom(@Param(value = "userId") int userId,
+                                @Param(value = "roomId") int roomId);
 }

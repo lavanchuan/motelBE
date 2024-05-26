@@ -16,6 +16,7 @@ import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.services.AppSystemService;
 import com.motel.motel.services.ICRUDService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -131,5 +132,11 @@ public class BookRoomServiceImpl implements ICRUDService<BookRoomDTO, Integer, B
         return dbContext.bookRoomRepository.findAllBookingByOwnerId(ownerId)
                 .stream().map(bookRoomMapper::toDTO)
                 .toList();
+    }
+
+    public BookRoomDTO lastBookingRoom(int userId, int roomId) {
+        BookRoomDAO booking = dbContext.bookRoomRepository.lastBookingRoom(userId, roomId);
+        if(booking == null) return null;
+        return bookRoomMapper.toDTO(booking);
     }
 }

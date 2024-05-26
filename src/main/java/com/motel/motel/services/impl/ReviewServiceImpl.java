@@ -2,11 +2,15 @@ package com.motel.motel.services.impl;
 
 import com.motel.motel.contexts.DbContext;
 import com.motel.motel.models.dtos.AccountDTO;
+import com.motel.motel.models.dtos.BookRoomDTO;
 import com.motel.motel.models.dtos.ReviewDTO;
+import com.motel.motel.models.e.BookRoomStatus;
 import com.motel.motel.models.entities.AccountDAO;
 import com.motel.motel.models.mapper.AccountMapper;
+import com.motel.motel.models.mapper.BookRoomMapper;
 import com.motel.motel.models.mapper.ReviewMapper;
 import com.motel.motel.models.response.BaseResponse;
+import com.motel.motel.models.response.ObjResponse;
 import com.motel.motel.models.response.ReviewResponse;
 import com.motel.motel.services.ICRUDService;
 import lombok.Data;
@@ -25,6 +29,10 @@ public class ReviewServiceImpl implements ICRUDService<ReviewDTO, Integer, Revie
 
     @Autowired
     ReviewMapper reviewMapper;
+
+    //Other mapper
+    @Autowired
+    BookRoomMapper bookRoomMapper;
 
     @Override
     public ReviewResponse add(ReviewDTO reviewDTO) {
@@ -58,6 +66,17 @@ public class ReviewServiceImpl implements ICRUDService<ReviewDTO, Integer, Revie
     @Override
     public ReviewDTO findById(Integer integer) {
         return null;
+    }
+
+    public ObjResponse.HasObject hasBookingRoom(int userId, int roomId) {
+        List<BookRoomDTO> bookRoomDTOList = dbContext.bookRoomRepository.findAllByUserIdRoomId(userId, roomId)
+                .stream().map(bookRoomMapper::toDTO)
+                .filter(booking -> booking.getStatus() == BookRoomStatus.CONFIRMED ||
+                        booking.getStatus() == BookRoomStatus.PAID ||
+                        booking.getStatus() == BookRoomStatus.EXPIRED)
+                .toList();
+
+        return new ObjResponse.HasObject(!bookRoomDTOList.isEmpty());
     }
 
 

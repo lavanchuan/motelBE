@@ -94,6 +94,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("last-booking-room")
+    public ResponseEntity<?> lastBookingRoom(@RequestParam(name = "userId") int userId,
+                                               @RequestParam(name = "roomId") int roomId){
+        return ResponseEntity.ok(adminService.bookRoomService.lastBookingRoom(userId, roomId));
+    }
+
+    @GetMapping("/has-booking-room")
+    ResponseEntity<?> hasBookingRoom(@RequestParam(name = "userId") int userId,
+                                     @RequestParam(name = "roomId") int roomId) {
+        return ResponseEntity.ok(adminService.reviewService.hasBookingRoom(userId, roomId));
+    }
+
     @PostMapping("/send-mess-admin")
     public ResponseEntity<?> sendMessageAdmin(@RequestBody MessageDTO request){
 
@@ -114,4 +126,6 @@ public class UserController {
 
         return ResponseEntity.ok(adminService.messageService.findAllBySenderReceiver(senderId, receiverId));
     }
+
+
 }

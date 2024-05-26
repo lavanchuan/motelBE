@@ -30,12 +30,6 @@ public class ApiController {
         return ResponseEntity.ok(adminService.motelRoomService.findById(roomId));
     }
 
-    // REVIEW BY ROOM ID
-    @GetMapping("/review-all-by-room")
-    public ResponseEntity<?> reviewFindAllByRoomId(@RequestParam(name = "motelRoomId") int motelRoomId) {
-        return ResponseEntity.ok(adminService.reviewService.findAllByRoomId(motelRoomId));
-    }
-
     //TODO notification
     @GetMapping("/notification-count-received")
     public ResponseEntity<?> countNotificationReceived(@RequestParam(name = "receiverId") int receiverId) {
@@ -107,6 +101,12 @@ public class ApiController {
             @RequestParam(name = "maxPrice", defaultValue = "-1") float maxPrice) {
         return ResponseEntity.ok(adminService.motelRoomService
                 .searchByAddressAndPrice(address, minPrice, maxPrice));
+    }
+
+    //TODO review
+    @GetMapping("/review-all") 
+    public ResponseEntity<?> reviewAllOfRoom(@RequestParam(name = "roomId") int roomId){
+        return ResponseEntity.ok(adminService.reviewService.findAllByRoomId(roomId).getData());
     }
 
 }

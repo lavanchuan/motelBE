@@ -53,4 +53,11 @@ public class ObjResponse {
     public static class BaseCount {
         private int count;
     }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class HasObject{
+        private boolean had;
+    }
 }

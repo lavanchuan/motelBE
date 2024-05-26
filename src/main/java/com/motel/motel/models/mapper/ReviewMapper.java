@@ -37,7 +37,8 @@ public class ReviewMapper implements BaseMapper<ReviewDAO, ReviewDTO, DbContext>
             if(reviewDTO.getRate() > 0) dao.setRate(reviewDTO.getRate());
             if(reviewDTO.getStatus() != null) dao.setStatus(reviewDTO.getStatus());
         } else {
-            if(reviewDTO.getCreateAt() == null || reviewDTO.getCreateAt().isEmpty()) dao.setCreatAt(LocalDateTime.now());
+            if(reviewDTO.getCreateAt() == null || reviewDTO.getCreateAt().isEmpty())
+                dao.setCreatAt(LocalDateTime.now());
             else dao.setCreatAt(DateTimeFormatService.toLocalDateTime(reviewDTO.getCreateAt()));
             dao.setComment(reviewDTO.getComment());
             dao.setRate(reviewDTO.getRate());
